@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"github.com/google/uuid"
 )
 
 // AttachmentController is the interface for managing attachments
@@ -23,10 +21,17 @@ type AttachmentController interface {
 
 type attachmentController struct{ *client }
 
+type AttachmentType string
+
+const (
+	ExternalInvoiceAttachment AttachmentType = "ExternalInvoice"
+	ProofOfPaymentAttachment  AttachmentType = "ProofOfPayment"
+)
+
 type Attachment struct {
-	Name        string `json:"name"`
-	ReferenceID string `json:"referenceId"`
-	Type        string `json:"type"`
+	Name        string         `json:"name"`
+	ReferenceID string         `json:"referenceId"`
+	Type        AttachmentType `json:"type"`
 }
 
 func (a *attachmentController) Upload(filename string) (*Attachment, error) {
@@ -52,7 +57,6 @@ func (a *attachmentController) Upload(filename string) (*Attachment, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", writer.FormDataContentType())
-	req.Header.Add("X-REQUEST-ID", uuid.New().String())
 	res := &Attachment{}
 	return res, a.doIntoWithAuth(req, res)
 }

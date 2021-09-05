@@ -23,22 +23,17 @@ type Invoice struct {
 	Amount               *Amount       `json:"amount"`
 	Attachments          []*Attachment `json:"attachments,omitempty"`
 	CCEmails             []string      `json:"ccEmails,omitempty"`
-	DueDate              time.Time     `json:"dueDate,omitempty"`
+	DueDate              *time.Time    `json:"dueDate,omitempty"`
 	ExchangeRateQuoteId  string        `json:"exchangeRateQuoteId,omitempty"`
 	ExternalInvoiceRefId string        `json:"externalInvoiceRefId,omitempty"`
 	Notes                string        `json:"notes,omitempty"`
 	PurposeOfPayment     string        `json:"purposeOfPayment,omitempty"`
 
 	// Populated on retrieval
-	ID          int64     `json:"id,omitempty"`
-	Status      string    `json:"status,omitempty"`
-	TimeCreated time.Time `json:"timeCreated,omitempty"`
-	ClaimLink   string    `json:"claimLink,omitempty"`
-}
-
-type Amount struct {
-	Currency string  `json:"currency"`
-	Number   float64 `json:"number"`
+	ID          int64      `json:"id,omitempty"`
+	Status      string     `json:"status,omitempty"`
+	TimeCreated *time.Time `json:"timeCreated,omitempty"`
+	ClaimLink   string     `json:"claimLink,omitempty"`
 }
 
 type invoiceController struct{ *client }
@@ -48,7 +43,8 @@ func (i *invoiceController) Create(inv *Invoice) (*Invoice, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := i.newRequest(http.MethodPost, "veem/1.1/invoices", bytes.NewReader(payload))
+	fmt.Println(string(payload))
+	req, err := i.newRequest(http.MethodPost, "veem/v1.1/invoices", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +53,7 @@ func (i *invoiceController) Create(inv *Invoice) (*Invoice, error) {
 }
 
 func (i *invoiceController) Get(id int64) (*Invoice, error) {
-	req, err := i.newRequest(http.MethodGet, fmt.Sprintf("veem/1.1/invoices/%d", id), nil)
+	req, err := i.newRequest(http.MethodGet, fmt.Sprintf("veem/v1.1/invoices/%d", id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +62,7 @@ func (i *invoiceController) Get(id int64) (*Invoice, error) {
 }
 
 func (i *invoiceController) Cancel(id int64) (*Invoice, error) {
-	req, err := i.newRequest(http.MethodPost, fmt.Sprintf("veem/1.1/invoices/%d/cancel", id), nil)
+	req, err := i.newRequest(http.MethodPost, fmt.Sprintf("veem/v1.1/invoices/%d/cancel", id), nil)
 	if err != nil {
 		return nil, err
 	}

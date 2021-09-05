@@ -195,7 +195,7 @@ func (c *contactController) Create(contact *ContactFull) (*Contact, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := c.newRequest(http.MethodPost, "veem/1.1/contacts", bytes.NewReader(payload))
+	req, err := c.newRequest(http.MethodPost, "veem/v1.1/contacts", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +208,7 @@ func (c *contactController) CreateBatch(contacts []*ContactFull, includeItems bo
 	if err != nil {
 		return nil, err
 	}
-	ep := fmt.Sprintf("veem/1.1/contacts/batch?includeItems=%t", includeItems)
+	ep := fmt.Sprintf("veem/v1.1/contacts/batch?includeItems=%t", includeItems)
 	req, err := c.newRequest(http.MethodPost, ep, bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
@@ -218,7 +218,7 @@ func (c *contactController) CreateBatch(contacts []*ContactFull, includeItems bo
 }
 
 func (c *contactController) GetBatch(batchID int64, includeItems bool) (*BatchOperation, error) {
-	ep := fmt.Sprintf("veem/1.1/contacts/batch/%d?includeItems=%t", batchID, includeItems)
+	ep := fmt.Sprintf("veem/v1.1/contacts/batch/%d?includeItems=%t", batchID, includeItems)
 	req, err := c.newRequest(http.MethodGet, ep, nil)
 	if err != nil {
 		return nil, err

@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func mustParseURL(u string) *url.URL {
@@ -69,6 +71,7 @@ func (c *client) doIntoWithAuth(req *http.Request, out interface{}) error {
 }
 
 func (c *client) do(req *http.Request) (io.ReadCloser, error) {
+	req.Header.Add("X-REQUEST-ID", uuid.New().String())
 	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err

@@ -81,7 +81,7 @@ type DraftPayment struct {
 	ApproveAutomatically bool          `json:"approveAutomatically,omitempty"`
 	Attachments          []*Attachment `json:"attachments,omitempty"`
 	CCEmails             []string      `json:"ccEmails,omitempty"`
-	DueDate              time.Time     `json:"dueDate,omitempty"`
+	DueDate              *time.Time    `json:"dueDate,omitempty"`
 	ExchangeRateQuoteId  string        `json:"exchangeRateQuoteId,omitempty"`
 	ExternalInvoiceRefId string        `json:"externalInvoiceRefId,omitempty"`
 	Notes                string        `json:"notes,omitempty"`
@@ -149,7 +149,7 @@ func (p *paymentControler) Create(payment *DraftPayment) (*Payment, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := p.newRequest(http.MethodPost, "veem/1.1/payments", bytes.NewReader(payload))
+	req, err := p.newRequest(http.MethodPost, "veem/v1.1/payments", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func (p *paymentControler) CreateBatch(payments []*DraftPayment, includeItems bo
 	if err != nil {
 		return nil, err
 	}
-	ep := fmt.Sprintf("veem/1.1/payments/batch?includeItems=%t", includeItems)
+	ep := fmt.Sprintf("veem/v1.1/payments/batch?includeItems=%t", includeItems)
 	req, err := p.newRequest(http.MethodPost, ep, bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
@@ -172,7 +172,7 @@ func (p *paymentControler) CreateBatch(payments []*DraftPayment, includeItems bo
 }
 
 func (p *paymentControler) GetBatch(batchID int64, includeItems bool) (*BatchOperation, error) {
-	ep := fmt.Sprintf("veem/1.1/payments/batch/%d?includeItems=%t", batchID, includeItems)
+	ep := fmt.Sprintf("veem/v1.1/payments/batch/%d?includeItems=%t", batchID, includeItems)
 	req, err := p.newRequest(http.MethodGet, ep, nil)
 	if err != nil {
 		return nil, err

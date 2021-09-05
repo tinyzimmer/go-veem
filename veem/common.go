@@ -24,3 +24,8 @@ type Entity struct {
 	Type         ContactType `json:"type"`
 	Phone        string      `json:"phone"`
 }
+
+type Amount struct {
+	Currency string  `json:"currency"`
+	Number   float64 `json:"number"`
+}
