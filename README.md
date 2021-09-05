@@ -16,14 +16,14 @@ import (
 func main() {
     // It is recommended to create and use a sandbox account
     // when first trying out the API.
-	client, err := veem.New(&veem.ClientOptions{
-		UseSandbox:   true,
-		ClientID:     "TINYZIMMER-abcdefgh",
-		ClientSecret: "superdupersecrt",
-	})
-	if err != nil {
-		panic(err)
-	}
+    client, err := veem.New(&veem.ClientOptions{
+        UseSandbox:   true,
+        ClientID:     "TINYZIMMER-abcdefgh",
+        ClientSecret: "superdupersecrt",
+    })
+    if err != nil {
+        panic(err)
+    }
 
     // Retrieve the full country currency map
     countryMap, err := client.Meta().CountryCurrencyMap(true)
@@ -53,25 +53,26 @@ func main() {
     io.Copy(f, rdr)
 
     // Create an invoice
+    attachment.Type = veem.ExternalInvoiceAttachment
     _, err := client.Invoices().Create(&veem.Invoice{
-		Payer: &veem.Entity{
-			BusinessName: "TinyZimmerTech LTD",
-			CountryCode:  "US",
-			Email:        "me@example.com",
-			FirstName:    "Tiny",
-			LastName:     "Zimmer",
-			Type:         "Business",
-			Phone:        "6785555555",
-		},
-		Amount: &veem.Amount{
-			Currency: "USD",
-			Number:   1000,
-		},
-		Attachments: []*veem.Attachment{attachment},
-	})
-	if err != nil {
-		panic(err)
-	}
+        Payer: &veem.Entity{
+            BusinessName: "TinyZimmerTech LTD",
+            CountryCode:  "US",
+            Email:        "me@example.com",
+            FirstName:    "Tiny",
+            LastName:     "Zimmer",
+            Type:         "Business",
+            Phone:        "6785555555",
+        },
+        Amount: &veem.Amount{
+            Currency: "USD",
+            Number:   1000,
+        },
+        Attachments: []*veem.Attachment{attachment},
+    })
+    if err != nil {
+        panic(err)
+    }
 }
 
 ```
