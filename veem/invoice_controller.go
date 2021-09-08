@@ -43,7 +43,6 @@ func (i *invoiceController) Create(inv *Invoice) (*Invoice, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(payload))
 	req, err := i.newRequest(http.MethodPost, "veem/v1.1/invoices", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err

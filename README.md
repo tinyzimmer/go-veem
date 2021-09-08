@@ -6,6 +6,62 @@ A Go client for the [Veem](https://www.veem.com/) REST API
 
 ## Quickstart
 
+### Working with contacts
+
+```go
+package main
+
+import (
+    "fmt"
+
+    "github.com/tinyzimmer/go-veem/veem"
+)
+
+func main() {
+    // It is recommended to create and use a sandbox account
+    // when first trying out the API.
+    client, err := veem.New(&veem.ClientOptions{
+        UseSandbox:   true,
+        ClientID:     "TINYZIMMER-abcdefgh",
+        ClientSecret: "superdupersecret",
+    })
+    if err != nil {
+        panic(err)
+    }
+
+    // See the docs for available filters that can be passed to a List
+    res, err := client.Contacts().List()
+    if err != nil {
+        panic(err)
+    }
+    for _, contact := range res.Contacts {
+        fmt.Printf("%+v\n", contact)
+    }
+
+    // Create a new contact
+    contact, err := client.Contacts().Create(&veem.ContactFull{
+        Contact: &veem.Contact{
+            ID:             0,
+            BusinessName:   "Test Client",
+            FirstName:      "Tiny",
+            LastName:       "Zimmer",
+            Email:          "tiny@zimmer.co",
+            ISOCountryCode: "US",
+            PhoneDialCode:  "+1",
+            PhoneNumber:    "6785555555",
+        },
+    })
+
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%+v\n", contact)
+}
+```
+
+### Working with invoices
+
 ```go
 package main
 
@@ -19,28 +75,34 @@ func main() {
     client, err := veem.New(&veem.ClientOptions{
         UseSandbox:   true,
         ClientID:     "TINYZIMMER-abcdefgh",
-        ClientSecret: "superdupersecrt",
+        ClientSecret: "superdupersecret",
     })
     if err != nil {
         panic(err)
     }
 
-    // Retrieve the full country currency map
-    countryMap, err := client.Meta().CountryCurrencyMap(true)
-    if err != nil {
-        panic(err)
-    }
-    for _, country := range countryMap {
-        fmt.Println(country)
-    }
+    // Ensure a contact for the invoice - you can also get or list
+    // contacts to retrieve their details.
+    contact, err := client.Contacts().Create(&veem.ContactFull{
+        Contact: &veem.Contact{
+            ID:             0,
+            BusinessName:   "Test Client",
+            FirstName:      "Tiny",
+            LastName:       "Zimmer",
+            Email:          "tiny@zimmer.co",
+            ISOCountryCode: "US",
+            PhoneDialCode:  "+1",
+            PhoneNumber:    "6785555555",
+        },
+    })
 
-    // Create an attachment to an invoice or payment
+    // Create an attachment to an invoice
     attachment, err := client.Attachments().Upload("./INV-0001.pdf")
     if err != nil {
         panic(err)
     }
 
-    // Download the attachment
+    // Download the attachment (obviously not required)
     rdr, err := client.Attachments().Download(attachment.Name, attachment.ReferenceID)
     if err != nil {
         panic(err)
@@ -54,16 +116,8 @@ func main() {
 
     // Create an invoice
     attachment.Type = veem.ExternalInvoiceAttachment
-    _, err := client.Invoices().Create(&veem.Invoice{
-        Payer: &veem.Entity{
-            BusinessName: "TinyZimmerTech LTD",
-            CountryCode:  "US",
-            Email:        "me@example.com",
-            FirstName:    "Tiny",
-            LastName:     "Zimmer",
-            Type:         "Business",
-            Phone:        "6785555555",
-        },
+    _, err = client.Invoices().Create(&veem.Invoice{
+        Payer: contact.ToEntity(veem.ContactBusiness),
         Amount: &veem.Amount{
             Currency: "USD",
             Number:   1000,
